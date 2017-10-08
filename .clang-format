@@ -1,0 +1,5 @@
+# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+BasedOnStyle: Google
+ColumnLimit: 80
+Language: Cpp
