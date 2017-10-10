@@ -1,0 +1,1 @@
+compilation_database = ${PROJECT_BINARY_DIR}/compile_commands.json

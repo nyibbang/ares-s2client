@@ -23,6 +23,10 @@ set(CMAKE_CXX_STANDARD 14)
 # Allow creating filters for projects in visual studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Compilation database
+configure_file("${PROJECT_SOURCE_DIR}/.clang.in" "${PROJECT_SOURCE_DIR}/.clang")
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOLEAN "Export compile commands" FORCE)
+
 # 3rd party packages
 find_package(Boost REQUIRED)
 add_subdirectory("contrib/s2client-api")
