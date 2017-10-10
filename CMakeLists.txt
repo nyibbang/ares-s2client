@@ -23,8 +23,9 @@ set(CMAKE_CXX_STANDARD 14)
 # Allow creating filters for projects in visual studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Compilation database
+# Development tools files
 configure_file("${PROJECT_SOURCE_DIR}/.clang.in" "${PROJECT_SOURCE_DIR}/.clang")
+configure_file("${PROJECT_SOURCE_DIR}/.lvimrc.in" "${PROJECT_SOURCE_DIR}/.lvimrc")
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOLEAN "Export compile commands" FORCE)
 
 # 3rd party packages
