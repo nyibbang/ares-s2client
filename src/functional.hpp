@@ -1,5 +1,9 @@
 #pragma once
 
+#include <utility>
+
+namespace ares {
+
 template <typename T>
 struct Polymorphic_constant_function {
   T value;
@@ -28,4 +32,5 @@ template <typename F, typename P>
 auto make_domain_projection_function(F&& f, P&& proj) {
   return Domain_projection_function<F, P>{std::forward<F>(f),
                                           std::forward<P>(proj)};
+}
 }

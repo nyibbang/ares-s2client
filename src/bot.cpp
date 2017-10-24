@@ -1,36 +1,15 @@
 #include "bot.hpp"
-#include "functional.hpp"
 #include <boost/optional.hpp>
 #include <iomanip>
 #include <iostream>
+#include "functional.hpp"
+#include "geometry.hpp"
 
 using namespace sc2;
 
 namespace ares {
 
 namespace {
-
-struct Less_distance {
-  Point2D origin;
-  bool operator()(Point2D a, Point2D b) const {
-    return DistanceSquared2D(origin, a) < DistanceSquared2D(origin, b);
-  }
-};
-
-/// Range<Unit*>
-template <typename FwdIter>
-auto nearest_unit(Point2D origin, FwdIter begin, FwdIter end) {
-  return std::min_element(
-      begin, end,
-      make_domain_projection_function(Less_distance{origin},
-                                      [](auto* unit) { return unit->pos; }));
-}
-
-/// Range<Unit*>
-template <typename R>
-auto nearest_unit(Point2D origin, R range) {
-  return nearest_unit(origin, begin(range), end(range));
-}
 
 // TODO: automatically get builder_unit_type
 bool build_structure(Agent& agent, UNIT_TYPEID unit_type,
