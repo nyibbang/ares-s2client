@@ -1,7 +1,9 @@
 #include "bot.hpp"
+#include <sc2api/sc2_interfaces.h>
 #include <boost/optional.hpp>
 #include <iomanip>
 #include <iostream>
+#include "decision.hpp"
 #include "functional.hpp"
 #include "geometry.hpp"
 
@@ -45,11 +47,9 @@ bool build_structure(Agent& agent, UNIT_TYPEID unit_type,
   const auto* builder = units.front();
 
   if (!position) {
-    float rx = GetRandomScalar();
-    float ry = GetRandomScalar();
-    position =
-        Point2D(builder->pos.x + rx * 15.0f, builder->pos.y + ry * 15.0f);
+    position = find_new_building_position(builder->pos);
   }
+
   std::cout << "Building structure " << UnitTypeToName(unit_type) << std::endl;
   agent.Actions()->UnitCommand(builder, ability_id, *position);
   return true;

@@ -10,12 +10,14 @@ set(ARES_S2CLIENT_HEADERS
   "bot.hpp"
   "functional.hpp"
   "geometry.hpp"
+  "decision.hpp"
 )
 
 set(ARES_S2CLIENT_SOURCES
   "bot.cpp"
   "main.cpp"
   "geometry.cpp"
+  "decision.cpp"
 )
 
 add_executable(ares-s2client
