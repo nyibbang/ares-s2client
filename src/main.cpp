@@ -21,9 +21,9 @@ int main(int argc, char* argv[]) {
   coordinator.LoadSettings(argc, argv);
   coordinator.SetWindowLocation(0, 0);
 
-  ares::Bot bot;
+  ares::Agent agent;
   coordinator.SetParticipants(
-      {CreateParticipant(Race::Terran, &bot), CreateComputer(Race::Random)});
+      {CreateParticipant(Race::Terran, &agent), CreateComputer(Race::Random)});
 
   coordinator.LaunchStarcraft();
   coordinator.StartGame(std::string{ARES_ROOT} + "/contrib/s2client-api/maps/" +
