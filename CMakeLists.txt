@@ -30,6 +30,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOLEAN "Export compile commands" F
 add_definitions(-DARES_ROOT="${PROJECT_SOURCE_DIR}")
 
 ###############################################################################
+# options
+###############################################################################
+option(ARES_DEBUG "Enables ares debugging tools." FALSE)
+
+###############################################################################
 # Boost
 ###############################################################################
 if (NOT DEFINED Boost_USE_STATIC_LIBS)

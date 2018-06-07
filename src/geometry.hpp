@@ -6,7 +6,7 @@ namespace ares {
 
 struct Less_distance {
   sc2::Point2D origin;
-  bool operator()(sc2::Point2D a, sc2::Point2D b) const;
+  bool operator()(const sc2::Point2D& a, const sc2::Point2D& b) const;
 };
 
 /// Range<Unit*>
@@ -19,8 +19,8 @@ auto nearest_unit(sc2::Point2D origin, FwdIter begin, FwdIter end) {
 }
 
 /// Range<Unit*>
-template <typename R>
-auto nearest_unit(sc2::Point2D origin, R range) {
+template <typename Range>
+auto nearest_unit(sc2::Point2D origin, Range range) {
   return nearest_unit(origin, begin(range), end(range));
 }
-}
+}  // namespace ares

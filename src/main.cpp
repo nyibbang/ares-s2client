@@ -1,20 +1,11 @@
 #include <sc2api/sc2_api.h>
 #include "bot.hpp"
 
-using namespace sc2;
+#ifdef ARES_DEBUG
+#include "debug.hpp"
+#endif
 
-//
-// Decision:
-// Based on a condition verified in an environment/context,
-// we take an action.
-//
-// Unit allocation:
-// To be defined
-//
-// Learning:
-// To be defined
-//
-//
+using namespace sc2;
 
 int main(int argc, char* argv[]) {
   Coordinator coordinator;
@@ -22,6 +13,11 @@ int main(int argc, char* argv[]) {
   coordinator.SetWindowLocation(0, 0);
 
   ares::Agent agent;
+
+#ifdef ARES_DEBUG
+  agent.stepped.connect(Print_state{std::cout});
+#endif
+
   coordinator.SetParticipants(
       {CreateParticipant(Race::Terran, &agent), CreateComputer(Race::Random)});
 
