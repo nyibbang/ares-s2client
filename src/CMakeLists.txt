@@ -14,7 +14,7 @@ configure_file(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(ARES_S2CLIENT_HEADERS
-  "bot.hpp"
+  "agent.hpp"
   "functional.hpp"
   "geometry.hpp"
   # "decision.hpp"
@@ -22,7 +22,7 @@ set(ARES_S2CLIENT_HEADERS
 )
 
 set(ARES_S2CLIENT_SOURCES
-  "bot.cpp"
+  "agent.cpp"
   "main.cpp"
   "geometry.cpp"
   # "decision.cpp"
