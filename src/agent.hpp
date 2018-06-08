@@ -1,5 +1,6 @@
 #pragma once
 
+#include "interfaces.hpp"
 #include <sc2api/sc2_agent.h>
 #include <boost/signals2/signal.hpp>
 #include <functional>
@@ -9,12 +10,6 @@ namespace ares {
 
 class Agent : public sc2::Agent {
  public:
-  struct Interfaces {
-    const sc2::ObservationInterface *observation;
-    sc2::QueryInterface *query;
-    sc2::DebugInterface *debug;
-    sc2::ActionInterface *actions;
-  };
 
   template <typename... Args>
   using signal_t = boost::signals2::signal<void(Interfaces, Args...)>;
