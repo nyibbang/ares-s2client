@@ -1,17 +1,14 @@
 # Setup MSVC parallelized builds
 add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 
-include_directories(
-  "../contrib/s2client-api/include"
-  "${PROJECT_BINARY_DIR}/contrib/s2client-api/generated"
-)
-
-set(config_file_output "${CMAKE_CURRENT_BINARY_DIR}/config.hpp")
+###############################################################################
+# executable
+###############################################################################
+set(config_file_output "${CMAKE_CURRENT_BINARY_DIR}/generated/config.hpp")
 configure_file(
   "config.hpp.in"
   ${config_file_output}
 )
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(ARES_S2CLIENT_HEADERS
   "agent.hpp"
@@ -23,7 +20,6 @@ set(ARES_S2CLIENT_HEADERS
 
 set(ARES_S2CLIENT_SOURCES
   "agent.cpp"
-  "main.cpp"
   "geometry.cpp"
   # "decision.cpp"
 )
@@ -33,9 +29,38 @@ if (ARES_DEBUG)
   list(APPEND ARES_S2CLIENT_SOURCES "debug.cpp")
 endif()
 
-add_executable(ares-s2client
-  ${ARES_S2CLIENT_HEADERS}
-  ${ARES_S2CLIENT_SOURCES}
+add_library(
+  ares-s2client
+    ${ARES_S2CLIENT_HEADERS}
+    ${ARES_S2CLIENT_SOURCES}
 )
-target_link_libraries(ares-s2client sc2api sc2utils)
-target_include_directories(ares-s2client PUBLIC ${Boost_INCLUDE_DIR})
+
+target_include_directories(
+  ares-s2client
+    PUBLIC
+      # boost
+      "${Boost_INCLUDE_DIR}"
+      # sc2api
+      "${PROJECT_SOURCE_DIR}/contrib/s2client-api/include"
+      "${PROJECT_BINARY_DIR}/contrib/s2client-api/generated"
+      # generated
+      "${CMAKE_CURRENT_BINARY_DIR}/generated"
+)
+
+target_link_libraries(
+  ares-s2client
+    sc2api
+    sc2utils
+)
+
+###############################################################################
+# executable
+###############################################################################
+add_executable(ares-s2client-bot
+  "main.cpp"
+)
+
+target_link_libraries(
+  ares-s2client-bot
+    ares-s2client
+)
