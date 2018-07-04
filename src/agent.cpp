@@ -1,4 +1,4 @@
-#include "bot.hpp"
+#include "agent.hpp"
 #include <sc2api/sc2_interfaces.h>
 #include <iomanip>
 #include "decision.hpp"
@@ -42,7 +42,7 @@ namespace ares {
 //  }
 //}
 
-Agent::Interfaces Agent::interfaces() {
+Interfaces Agent::interfaces() {
   return {
       Observation(),
       Query(),

@@ -1,16 +1,17 @@
 #include "debug.hpp"
+#include <iomanip>
 
 namespace ares {
 
-Print_state(std::ostream &out, milliseconds period = seconds{1})
+Print_state::Print_state(std::ostream &out, std::chrono::milliseconds period)
     : out{&out}, period{period} {}
 
-void Print_state::operator()(Agent::Interfaces intf) {
+void Print_state::operator()(Interfaces intf) {
   const auto now = clock::now();
-  const auto obs = intf.observation;
   if (now < last_print + period) {
     return;
   }
+  const auto obs = intf.observation;
   *out << "Loop count: " << std::setw(7) << obs->GetGameLoop() << std::setw(0)
        << " | Minerals: " << std::setw(5) << obs->GetMinerals() << std::setw(0)
        << " | Vespene: " << std::setw(5) << obs->GetVespene() << std::setw(0)

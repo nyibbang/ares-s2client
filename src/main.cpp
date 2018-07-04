@@ -1,9 +1,9 @@
-#include <sc2api/sc2_api.h>
-#include "bot.hpp"
-
+#include "agent.hpp"
+#include "config.hpp"
 #ifdef ARES_DEBUG
 #include "debug.hpp"
 #endif
+#include <sc2api/sc2_api.h>
 
 using namespace sc2;
 
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
   ares::Agent agent;
 
 #ifdef ARES_DEBUG
-  agent.stepped.connect(Print_state{std::cout});
+  agent.stepped.connect(ares::Print_state{std::cout});
 #endif
 
   coordinator.SetParticipants(
