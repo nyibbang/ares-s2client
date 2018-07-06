@@ -14,14 +14,15 @@ set(ARES_S2CLIENT_HEADERS
   "agent.hpp"
   "functional.hpp"
   "geometry.hpp"
-  # "decision.hpp"
+  "utility.hpp"
+  "decision.hpp"
   ${config_file_output}
 )
 
 set(ARES_S2CLIENT_SOURCES
   "agent.cpp"
   "geometry.cpp"
-  # "decision.cpp"
+  "decision.cpp"
 )
 
 if (ARES_DEBUG)

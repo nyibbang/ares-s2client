@@ -1,8 +1,6 @@
 #pragma once
 
-//#include <deque>
-//#include <sc2api/sc2_common.h>
-//#include <sc2api/sc2_interfaces.h>
+#include "agent.hpp"
 
 namespace ares {
 
@@ -19,4 +17,7 @@ namespace ares {
 // };
 //
 // sc2::Point2D find_new_building_position(const sc2::Point2D& center);
+
+void start_decision(ares::Agent& agent);
+
 }  // namespace ares
