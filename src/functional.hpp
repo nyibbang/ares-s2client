@@ -3,14 +3,14 @@
 #include <optional>
 #include "utility.hpp"
 
-#define ARES_FUNCTIONAL_DEFINE_CALLOPS()            \
-  template <typename... Args>                       \
-  constexpr auto operator()(Args&&... args) {       \
-    return impl(*this, fwd<Args>(args)...);         \
-  }                                                 \
-  template <typename... Args>                       \
-  constexpr auto operator()(Args&&... args) const { \
-    return impl(*this, fwd<Args>(args)...);         \
+#define ARES_FUNCTIONAL_DEFINE_CALLOPS()             \
+  template <typename... Args>                        \
+  constexpr auto operator()(Args&&... args) {        \
+    return impl(*this, std::forward<Args>(args)...); \
+  }                                                  \
+  template <typename... Args>                        \
+  constexpr auto operator()(Args&&... args) const {  \
+    return impl(*this, std::forward<Args>(args)...); \
   }
 
 namespace ares {
@@ -21,7 +21,7 @@ struct Constant_function {
 
   constexpr Constant_function() = default;
 
-  constexpr Constant_function(T&& value) : value{fwd<T>(value)} {}
+  constexpr Constant_function(T&& value) : value{std::forward<T>(value)} {}
 
   template <typename... Args>
   constexpr auto operator()(Args&&...) const {
@@ -45,7 +45,7 @@ struct Constant_function<void> {
 //  Maybe_function() = default;
 //
 //  Maybe_function(Predicate&& pred, Proc&& proc)
-//      : pred{fwd<Predicate>(pred)}, proc{fwd<Proc>(proc)} {}
+//      : pred{std::forward<Predicate>(pred)}, proc{std::forward<Proc>(proc)} {}
 //
 //  ARES_FUNCTIONAL_DEFINE_CALLOPS()
 //
@@ -55,7 +55,7 @@ struct Constant_function<void> {
 //    auto&& pred_res = obj.pred();
 //    if constexpr (std::is_void_v<
 //                      std::invoke_result_t<decltype(obj.proc), Args&&...>>) {
-//      return ) ? std::optional{obj.proc(fwd<Args>(args)...)}
+//      return ) ? std::optional{obj.proc(std::forward<Args>(args)...)}
 //                        : std::nullopt;
 //    } else {
 //    }
@@ -68,43 +68,44 @@ struct Constant_function<void> {
 //
 //  Maybe_transfo() = default;
 //
-//  Maybe_transfo(Predicate&& pred) : pred{fwd<Predicate>(pred)} {}
+//  Maybe_transfo(Predicate&& pred) : pred{std::forward<Predicate>(pred)} {}
 //
 //  ARES_FUNCTIONAL_DEFINE_CALLOPS()
 //
 // private:
 //  template <typename Obj, typename Func>
 //  static auto impl(Obj& obj, Func&& func) {
-//    return Maybe_function{obj.pred, fwd<Func>(func)};
+//    return Maybe_function{obj.pred, std::forward<Func>(func)};
 //  }
 //};
 
 template <typename... Functions>
 struct Compose;
 
-template <typename FirstFunction, typename... NextFunctions>
-struct Compose<FirstFunction, NextFunctions...> {
-  FirstFunction first_func;
-  Compose<NextFunctions...> next_funcs;
+template <typename Func1, typename... FuncN>
+struct Compose<Func1, FuncN...> {
+  Func1 func_1;
+  Compose<FuncN...> funcs_n;
 
   constexpr Compose() = default;
 
-  constexpr Compose(FirstFunction&& first_func, NextFunctions&&... next_funcs)
-      : first_func(fwd<FirstFunction>(first_func)),
-        next_funcs{fwd<NextFunctions>(next_funcs)...} {}
+  template <typename AFunc1, typename... AFuncN,
+            typename = std::enable_if_t<!std::is_same_v<Compose, AFunc1>>>
+  constexpr Compose(AFunc1&& afunc_1, AFuncN&&... afuncs_n)
+      : func_1(std::forward<AFunc1>(afunc_1)), funcs_n{std::forward<AFuncN>(afuncs_n)...} {}
 
   ARES_FUNCTIONAL_DEFINE_CALLOPS()
 
  private:
   template <typename Obj, typename... Args>
   static constexpr auto impl(Obj& obj, Args&&... args) {
-    if constexpr (sizeof...(NextFunctions) == 0u) {
-      return obj.first_func(fwd<Args>(args)...);
+    if constexpr (sizeof...(FuncN) == 0u) {
+      return obj.func_1(std::forward<Args>(args)...);
     } else if constexpr (std::is_void_v<std::invoke_result_t<
-                             decltype(obj.next_funcs), Args&&...>>) {
-      return obj.first_func(), obj.next_funcs(fwd<Args>(args)...);
+                             decltype(obj.funcs_n), Args&&...>>) {
+      return obj.funcs_n(std::forward<Args>(args)...), obj.func_1();
     } else {
-      return obj.first_func(obj.next_funcs(fwd<Args>(args)...));
+      return obj.func_1(obj.funcs_n(std::forward<Args>(args)...));
     }
   }
 };
@@ -112,9 +113,8 @@ struct Compose<FirstFunction, NextFunctions...> {
 template <>
 struct Compose<> : Constant_function<void> {};
 
-template <typename FirstFunction, typename... NextFunctions>
-Compose(FirstFunction&&, NextFunctions&&...)
-    ->Compose<FirstFunction, NextFunctions...>;
+template <typename Func1, typename... FuncN>
+Compose(Func1&&, FuncN&&...)->Compose<Func1, FuncN...>;
 Compose()->Compose<>;
 
 }  // namespace ares

@@ -31,13 +31,15 @@ if (ARES_DEBUG)
 endif()
 
 add_library(
-  ares-s2client
+  ares_s2client
     ${ARES_S2CLIENT_HEADERS}
     ${ARES_S2CLIENT_SOURCES}
 )
 
 target_include_directories(
-  ares-s2client
+  ares_s2client
+    INTERFACE
+      "${CMAKE_CURRENT_SOURCE_DIR}"
     PUBLIC
       # boost
       "${Boost_INCLUDE_DIR}"
@@ -49,7 +51,7 @@ target_include_directories(
 )
 
 target_link_libraries(
-  ares-s2client
+  ares_s2client
     sc2api
     sc2utils
 )
@@ -57,11 +59,11 @@ target_link_libraries(
 ###############################################################################
 # executable
 ###############################################################################
-add_executable(ares-s2client-bot
+add_executable(ares_s2client_bot
   "main.cpp"
 )
 
 target_link_libraries(
-  ares-s2client-bot
-    ares-s2client
+  ares_s2client_bot
+    ares_s2client
 )

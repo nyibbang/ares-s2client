@@ -33,6 +33,7 @@ add_definitions(-DARES_ROOT="${PROJECT_SOURCE_DIR}")
 # options
 ###############################################################################
 option(ARES_DEBUG "Enables ares debugging tools." FALSE)
+option(ARES_TESTS "Enables ares tests." TRUE)
 
 ###############################################################################
 # Boost
@@ -50,8 +51,18 @@ find_package(Boost 1.65.0 REQUIRED)
 # contrib
 ###############################################################################
 add_subdirectory("contrib/s2client-api")
+if (ARES_TESTS)
+  add_subdirectory("contrib/googletest")
+endif()
 
 ###############################################################################
 # sources
 ###############################################################################
 add_subdirectory("src")
+
+###############################################################################
+# tests
+###############################################################################
+if (ARES_TESTS)
+  add_subdirectory("tests")
+endif()
