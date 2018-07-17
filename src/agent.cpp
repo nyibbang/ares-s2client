@@ -2,7 +2,6 @@
 #include <sc2api/sc2_interfaces.h>
 #include <iomanip>
 #include "decision.hpp"
-#include "functional.hpp"
 
 using namespace sc2;
 

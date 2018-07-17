@@ -92,7 +92,8 @@ struct Compose<Func1, FuncN...> {
   template <typename AFunc1, typename... AFuncN,
             typename = std::enable_if_t<!std::is_same_v<Compose, AFunc1>>>
   constexpr Compose(AFunc1&& afunc_1, AFuncN&&... afuncs_n)
-      : func_1(std::forward<AFunc1>(afunc_1)), funcs_n{std::forward<AFuncN>(afuncs_n)...} {}
+      : func_1(std::forward<AFunc1>(afunc_1)),
+        funcs_n{std::forward<AFuncN>(afuncs_n)...} {}
 
   ARES_FUNCTIONAL_DEFINE_CALLOPS()
 
@@ -111,7 +112,7 @@ struct Compose<Func1, FuncN...> {
 };
 
 template <>
-struct Compose<> : Constant_function<void> {};
+struct Compose<> : Constant_function<> {};
 
 template <typename Func1, typename... FuncN>
 Compose(Func1&&, FuncN&&...)->Compose<Func1, FuncN...>;
