@@ -4,6 +4,7 @@
 #include "mock_function.hpp"
 
 using namespace ::ares;
+using namespace ::ares::testing;
 using namespace ::testing;
 
 TEST(FunctionalCompose, ConstructibleByDefault) {
@@ -12,9 +13,9 @@ TEST(FunctionalCompose, ConstructibleByDefault) {
 }
 
 TEST(FunctionalCompose, FunctionResultPassesToNext) {
-  tests::Mock_function<int(int)> f1;
-  tests::Mock_function<std::string(int)> f2;
-  tests::Mock_function<float(std::string)> f3;
+  Mock_function<int(int)> f1;
+  Mock_function<std::string(int)> f2;
+  Mock_function<float(std::string)> f3;
   Compose c{f3, f2, f1};
   InSequence seq;
   EXPECT_CALL(f1, Call(11)).WillOnce(Return(13));
@@ -24,8 +25,8 @@ TEST(FunctionalCompose, FunctionResultPassesToNext) {
 }
 
 TEST(FunctionalCompose, FunctionReturningVoid) {
-  tests::Mock_function<void(int)> f1;
-  tests::Mock_function<int()> f2;
+  Mock_function<void(int)> f1;
+  Mock_function<int()> f2;
   Compose c{f2, f1};
 
   InSequence seq;
@@ -35,7 +36,7 @@ TEST(FunctionalCompose, FunctionReturningVoid) {
 }
 
 TEST(FunctionalCompose, WithOnlyOneFunction) {
-  tests::Mock_function<int(int)> f;
+  Mock_function<int(int)> f;
   Compose c{f};
   EXPECT_CALL(f, Call(3829)).WillOnce(Return(326));
   EXPECT_EQ(326, c(3829));
