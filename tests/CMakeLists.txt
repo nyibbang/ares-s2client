@@ -1,9 +1,11 @@
-enable_testing()
+set(
+  ARES_S2CLIENT_TESTS_HEADERS
+    "mock_function.hpp"
+)
 
-set(ARES_S2CLIENT_TESTS_HEADERS)
-
-set(ARES_S2CLIENT_TESTS_SOURCES
-  "test_functional.cpp"
+set(
+  ARES_S2CLIENT_TESTS_SOURCES
+    "test_functional.cpp"
 )
 
 add_executable(

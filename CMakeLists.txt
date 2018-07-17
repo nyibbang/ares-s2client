@@ -64,5 +64,6 @@ add_subdirectory("src")
 # tests
 ###############################################################################
 if (ARES_TESTS)
+  enable_testing()
   add_subdirectory("tests")
 endif()
