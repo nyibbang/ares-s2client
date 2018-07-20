@@ -10,6 +10,7 @@ using namespace ::testing;
 TEST(FunctionalCompose, ConstructibleByDefault) {
   Compose c;
   EXPECT_NO_THROW(c());
+  EXPECT_NO_THROW(c(127)); // still polymorphic
 }
 
 TEST(FunctionalCompose, FunctionResultPassesToNext) {
@@ -40,4 +41,37 @@ TEST(FunctionalCompose, WithOnlyOneFunction) {
   Compose c{f};
   EXPECT_CALL(f, Call(3829)).WillOnce(Return(326));
   EXPECT_EQ(326, c(3829));
+}
+
+TEST(FunctionMaybeFunction, ConstructibleByDefault) {
+  Maybe_function mf;
+  EXPECT_NO_THROW(mf());
+  EXPECT_NO_THROW(mf(321)); // still polymorphic
+}
+
+TEST(FunctionMaybeFunction, DoesNotCallProcIfPredReturnsFalse) {
+  Mock_function<bool()> pred;
+  ::testing::StrictMock<Mock_function<int(int)>> proc;
+  Maybe_function mf{pred, proc};
+  EXPECT_CALL(pred, Call()).WillOnce(Return(false));
+  mf(342789);
+}
+
+TEST(FunctionMaybeFunction, ReturnsNulloptIfPredReturnsFalse) {
+  Mock_function<bool()> pred;
+  Mock_function<int(int)> proc;
+  Maybe_function mf{pred, proc};
+  EXPECT_CALL(pred, Call()).WillOnce(Return(false));
+  EXPECT_EQ(std::nullopt, mf(342789));
+}
+
+TEST(FunctionMaybeFunction, ReturnsOptOfProcResultIfPredReturnsTrue) {
+  Mock_function<bool()> pred;
+  Mock_function<int(int)> proc;
+  Maybe_function mf{pred, proc};
+  EXPECT_CALL(pred, Call()).WillOnce(Return(true));
+  EXPECT_CALL(proc, Call(31283)).WillOnce(Return(213789));
+  const auto& res = mf(31283);
+  EXPECT_TRUE(res);
+  EXPECT_EQ(213789, *res);
 }

@@ -37,48 +37,6 @@ struct Constant_function<void> {
   constexpr void operator()(Args&&...) const {}
 };
 
-// template <typename Predicate, typename Proc>
-// struct Maybe_function {
-//  Predicate pred;
-//  Proc proc;
-//
-//  Maybe_function() = default;
-//
-//  Maybe_function(Predicate&& pred, Proc&& proc)
-//      : pred{std::forward<Predicate>(pred)}, proc{std::forward<Proc>(proc)} {}
-//
-//  ARES_FUNCTIONAL_DEFINE_CALLOPS()
-//
-// private:
-//  template <typename Obj, typename... Args>
-//  static auto impl(Obj& obj, Args&&... args) {
-//    auto&& pred_res = obj.pred();
-//    if constexpr (std::is_void_v<
-//                      std::invoke_result_t<decltype(obj.proc), Args&&...>>) {
-//      return ) ? std::optional{obj.proc(std::forward<Args>(args)...)}
-//                        : std::nullopt;
-//    } else {
-//    }
-//  }
-//};
-
-// template <typename Predicate>
-// struct Maybe_transfo {
-//  Predicate pred;
-//
-//  Maybe_transfo() = default;
-//
-//  Maybe_transfo(Predicate&& pred) : pred{std::forward<Predicate>(pred)} {}
-//
-//  ARES_FUNCTIONAL_DEFINE_CALLOPS()
-//
-// private:
-//  template <typename Obj, typename Func>
-//  static auto impl(Obj& obj, Func&& func) {
-//    return Maybe_function{obj.pred, std::forward<Func>(func)};
-//  }
-//};
-
 template <typename... Functions>
 struct Compose;
 
@@ -117,5 +75,64 @@ struct Compose<> : Constant_function<> {};
 template <typename Func1, typename... FuncN>
 Compose(Func1&&, FuncN&&...)->Compose<Func1, FuncN...>;
 Compose()->Compose<>;
+
+template <typename Predicate, typename Proc>
+struct Maybe_function {
+  Predicate pred;
+  Proc proc;
+
+  constexpr Maybe_function() = default;
+
+  constexpr Maybe_function(Predicate&& pred, Proc&& proc)
+      : pred{std::forward<Predicate>(pred)}, proc{std::forward<Proc>(proc)} {}
+
+  ARES_FUNCTIONAL_DEFINE_CALLOPS()
+
+ private:
+  template <typename Obj, typename... Args>
+  using ObjProcResult =
+      std::invoke_result_t<decltype(std::declval<Obj>().proc), Args...>;
+  template <typename Obj, typename... Args>
+  static constexpr std::optional<
+      std::conditional_t<std::is_void_v<ObjProcResult<Obj, Args&&...>>, Unit,
+                         ObjProcResult<Obj, Args&&...>>>
+  impl(Obj& obj, Args&&... args) {
+    if (!obj.pred()) {
+      return std::nullopt;
+    }
+
+    if constexpr (std::is_void_v<ObjProcResult<Obj, Args&&...>>) {
+      obj.proc(std::forward<Args>(args)...);
+      return Unit{};
+    } else {
+      return obj.proc(std::forward<Args>(args)...);
+    }
+  }
+};
+
+template <typename Predicate, typename Proc>
+Maybe_function(Predicate&& pred, Proc&& proc)->Maybe_function<Predicate, Proc>;
+Maybe_function()->Maybe_function<std::true_type, Constant_function<>>;
+
+template <typename Predicate>
+struct Maybe_transfo {
+  Predicate pred;
+
+  constexpr Maybe_transfo() = default;
+
+  constexpr Maybe_transfo(Predicate&& pred)
+      : pred{std::forward<Predicate>(pred)} {}
+
+  ARES_FUNCTIONAL_DEFINE_CALLOPS()
+
+ private:
+  template <typename Obj, typename Func>
+  static constexpr auto impl(Obj& obj, Func&& func) {
+    return Maybe_function{obj.pred, std::forward<Func>(func)};
+  }
+};
+
+template <typename Predicate>
+Maybe_transfo(Predicate&& pred)->Maybe_transfo<Predicate>;
 
 }  // namespace ares
