@@ -1,6 +1,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "functional.hpp"
+#include <functional.hpp>
 #include "mock_function.hpp"
 
 using namespace ::ares;

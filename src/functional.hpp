@@ -3,14 +3,14 @@
 #include <optional>
 #include "utility.hpp"
 
-#define ARES_FUNCTIONAL_DEFINE_CALLOPS()             \
-  template <typename... Args>                        \
-  constexpr auto operator()(Args&&... args) {        \
-    return impl(*this, std::forward<Args>(args)...); \
-  }                                                  \
-  template <typename... Args>                        \
-  constexpr auto operator()(Args&&... args) const {  \
-    return impl(*this, std::forward<Args>(args)...); \
+#define ARES_FUNCTIONAL_DEFINE_CALLOPS()                       \
+  template <typename... Args>                                  \
+  constexpr decltype(auto) operator()(Args&&... args) {        \
+    return impl(*this, std::forward<Args>(args)...);           \
+  }                                                            \
+  template <typename... Args>                                  \
+  constexpr decltype(auto) operator()(Args&&... args) const {  \
+    return impl(*this, std::forward<Args>(args)...);           \
   }
 
 namespace ares {
@@ -24,7 +24,7 @@ struct Constant_function {
   constexpr Constant_function(T&& value) : value{std::forward<T>(value)} {}
 
   template <typename... Args>
-  constexpr auto operator()(Args&&...) const {
+  constexpr T operator()(Args&&...) const {
     return value;
   }
 };
@@ -48,7 +48,7 @@ struct Compose<Func1, FuncN...> {
   constexpr Compose() = default;
 
   template <typename AFunc1, typename... AFuncN,
-            typename = std::enable_if_t<!std::is_same_v<Compose, AFunc1>>>
+            typename = std::enable_if_t<!std::is_same_v<Compose, std::decay_t<AFunc1>>>>
   constexpr Compose(AFunc1&& afunc_1, AFuncN&&... afuncs_n)
       : func_1(std::forward<AFunc1>(afunc_1)),
         funcs_n{std::forward<AFuncN>(afuncs_n)...} {}
@@ -57,7 +57,7 @@ struct Compose<Func1, FuncN...> {
 
  private:
   template <typename Obj, typename... Args>
-  static constexpr auto impl(Obj& obj, Args&&... args) {
+  static constexpr decltype(auto) impl(Obj& obj, Args&&... args) {
     if constexpr (sizeof...(FuncN) == 0u) {
       return obj.func_1(std::forward<Args>(args)...);
     } else if constexpr (std::is_void_v<std::invoke_result_t<

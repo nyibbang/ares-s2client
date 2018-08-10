@@ -5,6 +5,7 @@ set(
 
 set(
   ARES_S2CLIENT_TESTS_SOURCES
+    "test_utility.cpp"
     "test_functional.cpp"
 )
 

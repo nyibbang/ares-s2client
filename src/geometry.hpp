@@ -8,7 +8,7 @@
 
 namespace ares {
 
-inline sc2::Point2D unit_position(const sc2::Unit* unit) { return unit->pos; }
+inline sc2::Point2D unit_position(const sc2::Unit& unit) { return unit.pos; }
 
 struct Less_distance {
   sc2::Point2D origin;
@@ -18,9 +18,11 @@ struct Less_distance {
 /// Range<Unit*>
 template <typename FwdIter>
 FwdIter nearest_unit(const sc2::Point2D& origin, FwdIter begin, FwdIter end) {
-  return std::min_element(boost::make_transform_iterator(begin, &unit_position),
-                          boost::make_transform_iterator(end, &unit_position),
-                          Less_distance{origin})
+  constexpr auto unit_position_fun = Compose{&unit_position, Source{}};
+  return std::min_element(
+             boost::make_transform_iterator(begin, unit_position_fun),
+             boost::make_transform_iterator(end, unit_position_fun),
+             Less_distance{origin})
       .base();
 }
 
@@ -29,4 +31,5 @@ template <typename Range>
 auto nearest_unit(const sc2::Point2D& origin, Range&& range) {
   return nearest_unit(origin, begin(range), end(range));
 }
+
 }  // namespace ares
